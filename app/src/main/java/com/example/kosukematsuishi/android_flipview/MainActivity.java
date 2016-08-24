@@ -2,12 +2,14 @@ package com.example.kosukematsuishi.android_flipview;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import se.emilsjolander.flipview.FlipView;
 
@@ -19,26 +21,33 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        flipView = (FlipView) findViewById(R.id.flip_view);
-        flipView.setAdapter(new MyAdapter(new DoubleSpreadPageView.Handler() {
+        MyAdapter adapter = MyAdapter.sharedInstance;
+        adapter.setHandler(new DoubleSpreadPageView.Handler() {
             @Override
-            public void onClickLeft() {
+            public void onClickLeft(int position) {
                 Log.d("penta", "handler left");
+                DetailFragment fragment = new DetailFragment();
+                fragment.setPagePosition(position, true);
                 getFragmentManager().beginTransaction()
-                        .add(R.id.main_layout, new DetailFragment())
+                        .add(R.id.main_layout, fragment)
                         .addToBackStack(null)
                         .commit();
             }
 
             @Override
-            public void onClickRight() {
+            public void onClickRight(int position) {
                 Log.d("penta", "handler right");
+                DetailFragment fragment = new DetailFragment();
+                fragment.setPagePosition(position, false);
                 getFragmentManager().beginTransaction()
-                        .add(R.id.main_layout, new DetailFragment())
+                        .add(R.id.main_layout, fragment)
                         .addToBackStack(null)
                         .commit();
             }
-        }));
+        });
+
+        flipView = (FlipView) findViewById(R.id.flip_view);
+        flipView.setAdapter(adapter);
         flipView.requestLayout();
     }
 
@@ -58,10 +67,36 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static class DetailFragment extends Fragment {
+        private DoubleSpreadPageModel page;
+        private boolean isLeft;
+
+        public void setPagePosition(int pagePosition, boolean isLeft) {
+            page = (DoubleSpreadPageModel) MyAdapter.sharedInstance.getItem(pagePosition);
+            this.isLeft = isLeft;
+        }
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d("penta", "DetailFragment.onCreateView() container=" + container.toString());
-            return inflater.inflate(R.layout.fragment_detail, container, false);
+            View layout = inflater.inflate(R.layout.fragment_detail, container, false);
+            ImageView imageView = (ImageView) layout.findViewById(R.id.detail_image_view);
+            int id;
+            if (isLeft) {
+                id = page.getLeftImageId();
+            } else {
+                id = page.getRightImageId();
+            }
+            Drawable drawable = id != DoubleSpreadPageModel.NO_IMAGE ? getContext().getDrawable(id) : null;
+            imageView.setImageDrawable(drawable);
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d("penta", "DetailFragment.imageView.onClick()");
+                    page.setImages(page.getRightImageId(), page.getLeftImageId()); // 左右いれかえ
+                    MyAdapter.sharedInstance.notifyObservers();
+                    getFragmentManager().popBackStack();
+                }
+            });
+            return layout;
         }
     }
 }

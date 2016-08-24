@@ -3,7 +3,6 @@ package com.example.kosukematsuishi.android_flipview;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -15,9 +14,9 @@ public class DoubleSpreadPageView extends LinearLayout {
     public ImageView leftImageView;
     public ImageView rightImageView;
 
-    public static interface Handler {
-        public void onClickLeft();
-        public void onClickRight();
+    public interface Handler {
+        void onClickLeft(int position);
+        void onClickRight(int position);
     }
 
     public DoubleSpreadPageView(Context context, AttributeSet attrs) {
@@ -27,25 +26,23 @@ public class DoubleSpreadPageView extends LinearLayout {
         rightImageView = (ImageView) findViewById(R.id.right_image_view);
     }
 
-    public void setup(Drawable leftImage, Drawable rightImage, final Handler handler) {
+    public void setup(Drawable leftImage, Drawable rightImage, final int position, final Handler handler) {
         leftImageView.setImageDrawable(leftImage);
         rightImageView.setImageDrawable(rightImage);
 
         leftImageView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("penta", "left");
                 if (handler != null) {
-                    handler.onClickLeft();
+                    handler.onClickLeft(position);
                 }
             }
         });
         rightImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("penta", "right");
                 if (handler != null) {
-                    handler.onClickRight();
+                    handler.onClickRight(position);
                 }
             }
         });
