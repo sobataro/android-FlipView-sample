@@ -6,13 +6,20 @@ import android.support.v7.app.AppCompatActivity;
 import se.emilsjolander.flipview.FlipView;
 
 public class MainActivity extends AppCompatActivity {
+    FlipView flipView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FlipView flipView = (FlipView) findViewById(R.id.flip_view);
+        flipView = (FlipView) findViewById(R.id.flip_view);
         flipView.setAdapter(new MyAdapter());
+        flipView.requestLayout();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 }

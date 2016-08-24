@@ -1,11 +1,10 @@
 package com.example.kosukematsuishi.android_flipview;
 
+import android.content.Context;
 import android.database.DataSetObserver;
-import android.graphics.Color;
-import android.view.LayoutInflater;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ListAdapter;
 
 /**
@@ -13,7 +12,12 @@ import android.widget.ListAdapter;
  */
 public class MyAdapter implements ListAdapter {
     private int[] imageResources = {
-            R.drawable.obama, R.drawable.road_rage, R.drawable.taipei_101, R.drawable.world, R.drawable.yudetaro_logo
+            R.drawable.obama,
+            R.drawable.road_rage,
+            R.drawable.taipei_101,
+            R.drawable.world,
+            R.drawable.yudetaro_logo,
+            R.drawable.ss1,
     };
 
     @Override
@@ -38,7 +42,7 @@ public class MyAdapter implements ListAdapter {
 
     @Override
     public int getCount() {
-        return imageResources.length;
+        return imageResources.length / 2 + 1;
     }
 
     @Override
@@ -58,14 +62,20 @@ public class MyAdapter implements ListAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ImageView imageView;
-        if (convertView == null) {
-            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_page, null);
+        Context context = parent.getContext();
+        DoubleSpreadPageView pageView;
+        if (convertView instanceof DoubleSpreadPageView) {
+            pageView = (DoubleSpreadPageView) convertView;
+        } else {
+            pageView = new DoubleSpreadPageView(context, null);
         }
-        convertView.setBackgroundColor(Color.WHITE);
-        imageView = (ImageView) convertView.findViewById(R.id.image_view);
-        imageView.setImageDrawable(parent.getContext().getDrawable(imageResources[position]));
-        return convertView;
+        int leftPageNo = position * 2 - 1;
+        int rightPageNo = leftPageNo + 1;
+        Drawable leftImage = 0 < leftPageNo ? context.getDrawable(imageResources[leftPageNo]) : null;
+        Drawable rightImage = rightPageNo < imageResources.length ? context.getDrawable(imageResources[rightPageNo]) : null;
+        pageView.leftImageView.setImageDrawable(leftImage);
+        pageView.rightImageView.setImageDrawable(rightImage);
+        return pageView;
     }
 
     @Override
