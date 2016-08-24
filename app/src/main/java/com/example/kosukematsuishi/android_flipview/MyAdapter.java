@@ -7,25 +7,35 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
 
+import java.util.LinkedList;
+
 /**
  * Created by kosuke.matsuishi on 2016/08/24.
  */
 public class MyAdapter implements ListAdapter {
     private DoubleSpreadPageView.Handler handler;
 
+    private LinkedList<DoubleSpreadPageModel> pages;
+
     public MyAdapter(DoubleSpreadPageView.Handler handler) {
         super();
         this.handler = handler;
-    }
 
-    private int[] imageResources = {
-            R.drawable.obama,
-            R.drawable.road_rage,
-            R.drawable.taipei_101,
-            R.drawable.world,
-            R.drawable.yudetaro_logo,
-            R.drawable.ss1,
-    };
+        int[] imageResources = {
+                R.drawable.obama,
+                R.drawable.road_rage,
+                R.drawable.taipei_101,
+                R.drawable.world,
+                R.drawable.yudetaro_logo,
+                R.drawable.ss1,
+        };
+
+        pages = new LinkedList<DoubleSpreadPageModel>();
+        pages.add(new DoubleSpreadPageModel(0, R.drawable.obama));
+        pages.add(new DoubleSpreadPageModel(R.drawable.road_rage, R.drawable.taipei_101));
+        pages.add(new DoubleSpreadPageModel(R.drawable.world, R.drawable.yudetaro_logo));
+        pages.add(new DoubleSpreadPageModel(R.drawable.ss1, 0));
+    }
 
     @Override
     public boolean areAllItemsEnabled() {
@@ -49,12 +59,12 @@ public class MyAdapter implements ListAdapter {
 
     @Override
     public int getCount() {
-        return imageResources.length / 2 + 1;
+        return pages.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return position;
+        return pages.get(position);
     }
 
     @Override
@@ -76,10 +86,11 @@ public class MyAdapter implements ListAdapter {
         } else {
             pageView = new DoubleSpreadPageView(context, null);
         }
-        int leftPageNo = position * 2 - 1;
-        int rightPageNo = leftPageNo + 1;
-        Drawable leftImage = 0 < leftPageNo ? context.getDrawable(imageResources[leftPageNo]) : null;
-        Drawable rightImage = rightPageNo < imageResources.length ? context.getDrawable(imageResources[rightPageNo]) : null;
+        DoubleSpreadPageModel page = pages.get(position);
+        int leftId = page.getLeftImageId();
+        int rightId = page.getRightImageId();
+        Drawable leftImage = 0 != leftId ? context.getDrawable(leftId) : null;
+        Drawable rightImage = 0 != rightId ? context.getDrawable(rightId) : null;
         pageView.setup(leftImage, rightImage, handler);
         return pageView;
     }
