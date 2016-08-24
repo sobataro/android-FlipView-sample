@@ -24,4 +24,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.3.0'
     compile 'se.emilsjolander:android-flipview:1.1.0'
+    compile 'io.reactivex:rxjava:1.1.9'
 }

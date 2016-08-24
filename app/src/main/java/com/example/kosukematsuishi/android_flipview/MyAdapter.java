@@ -11,6 +11,13 @@ import android.widget.ListAdapter;
  * Created by kosuke.matsuishi on 2016/08/24.
  */
 public class MyAdapter implements ListAdapter {
+    private DoubleSpreadPageView.Handler handler;
+
+    public MyAdapter(DoubleSpreadPageView.Handler handler) {
+        super();
+        this.handler = handler;
+    }
+
     private int[] imageResources = {
             R.drawable.obama,
             R.drawable.road_rage,
@@ -73,8 +80,7 @@ public class MyAdapter implements ListAdapter {
         int rightPageNo = leftPageNo + 1;
         Drawable leftImage = 0 < leftPageNo ? context.getDrawable(imageResources[leftPageNo]) : null;
         Drawable rightImage = rightPageNo < imageResources.length ? context.getDrawable(imageResources[rightPageNo]) : null;
-        pageView.leftImageView.setImageDrawable(leftImage);
-        pageView.rightImageView.setImageDrawable(rightImage);
+        pageView.setup(leftImage, rightImage, handler);
         return pageView;
     }
 
