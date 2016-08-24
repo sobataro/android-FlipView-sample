@@ -10,16 +10,16 @@ import android.widget.ListAdapter;
 /**
  * Created by kosuke.matsuishi on 2016/08/24.
  */
-public class MyAdapter implements ListAdapter {
+public class BookAdapter implements ListAdapter {
     private BookViewModel bookViewModel = BookViewModel.getInstance();
 
     private DoubleSpreadPageView.Handler handler;
 
-    public MyAdapter() {
+    public BookAdapter() {
         super();
     }
 
-    public MyAdapter(DoubleSpreadPageView.Handler handler) {
+    public BookAdapter(DoubleSpreadPageView.Handler handler) {
         this();
         this.handler = handler;
     }
