@@ -3,49 +3,25 @@ package com.example.kosukematsuishi.android_flipview;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Created by kosuke.matsuishi on 2016/08/24.
  */
 public class MyAdapter implements ListAdapter {
+    private BookViewModel bookViewModel = BookViewModel.getInstance();
+
     private DoubleSpreadPageView.Handler handler;
 
-    private List<DoubleSpreadPageModel> pages;
-
-    private List<DataSetObserver> observers;
-
-    private MyAdapter() {
+    public MyAdapter() {
         super();
     }
 
-    public static MyAdapter sharedInstance = new MyAdapter();
-
-    public void setHandler(DoubleSpreadPageView.Handler handler) {
+    public MyAdapter(DoubleSpreadPageView.Handler handler) {
+        this();
         this.handler = handler;
-
-        int[] imageResources = {
-                R.drawable.obama,
-                R.drawable.road_rage,
-                R.drawable.taipei_101,
-                R.drawable.world,
-                R.drawable.yudetaro_logo,
-                R.drawable.ss1,
-        };
-
-        pages = new LinkedList<>();
-        pages.add(new DoubleSpreadPageModel(0, R.drawable.obama));
-        pages.add(new DoubleSpreadPageModel(R.drawable.road_rage, R.drawable.taipei_101));
-        pages.add(new DoubleSpreadPageModel(R.drawable.world, R.drawable.yudetaro_logo));
-        pages.add(new DoubleSpreadPageModel(R.drawable.ss1, 0));
-
-        observers = new LinkedList<>();
     }
 
     @Override
@@ -60,23 +36,22 @@ public class MyAdapter implements ListAdapter {
 
     @Override
     public void registerDataSetObserver(DataSetObserver observer) {
-        Log.d("penta", "registerDataSetObserver()");
-        observers.add(observer);
+        bookViewModel.registerDataSetObserver(observer);
     }
 
     @Override
     public void unregisterDataSetObserver(DataSetObserver observer) {
-        observers.remove(observer);
+        bookViewModel.unregisterDataSetObserver(observer);
     }
 
     @Override
     public int getCount() {
-        return pages.size();
+        return bookViewModel.getCount();
     }
 
     @Override
     public Object getItem(int position) {
-        return pages.get(position);
+        return bookViewModel.getItem(position);
     }
 
     @Override
@@ -98,7 +73,7 @@ public class MyAdapter implements ListAdapter {
         } else {
             pageView = new DoubleSpreadPageView(context, null);
         }
-        DoubleSpreadPageModel page = pages.get(position);
+        DoubleSpreadPageModel page = bookViewModel.getItem(position);
         int leftId = page.getLeftImageId();
         int rightId = page.getRightImageId();
         Drawable leftImage = DoubleSpreadPageModel.NO_IMAGE != leftId ? context.getDrawable(leftId) : null;
@@ -108,9 +83,7 @@ public class MyAdapter implements ListAdapter {
     }
 
     public void notifyObservers() {
-        for (DataSetObserver observer : observers) {
-            observer.onChanged();
-        }
+        bookViewModel.notifyObservers();
     }
 
     @Override

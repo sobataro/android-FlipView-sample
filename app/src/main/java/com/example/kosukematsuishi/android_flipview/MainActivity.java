@@ -5,7 +5,6 @@ import android.app.FragmentManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,17 +14,16 @@ import se.emilsjolander.flipview.FlipView;
 
 public class MainActivity extends AppCompatActivity {
     FlipView flipView;
+    MyAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        MyAdapter adapter = MyAdapter.sharedInstance;
-        adapter.setHandler(new DoubleSpreadPageView.Handler() {
+        adapter = new MyAdapter(new DoubleSpreadPageView.Handler() {
             @Override
             public void onClickLeft(int position) {
-                Log.d("penta", "handler left");
                 DetailFragment fragment = new DetailFragment();
                 fragment.setPagePosition(position, true);
                 getFragmentManager().beginTransaction()
@@ -36,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClickRight(int position) {
-                Log.d("penta", "handler right");
                 DetailFragment fragment = new DetailFragment();
                 fragment.setPagePosition(position, false);
                 getFragmentManager().beginTransaction()
@@ -70,8 +67,8 @@ public class MainActivity extends AppCompatActivity {
         private DoubleSpreadPageModel page;
         private boolean isLeft;
 
-        public void setPagePosition(int pagePosition, boolean isLeft) {
-            page = (DoubleSpreadPageModel) MyAdapter.sharedInstance.getItem(pagePosition);
+        public void setPagePosition(int position, boolean isLeft) {
+            page = BookViewModel.getInstance().getItem(position);
             this.isLeft = isLeft;
         }
 
@@ -90,9 +87,8 @@ public class MainActivity extends AppCompatActivity {
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d("penta", "DetailFragment.imageView.onClick()");
                     page.setImages(page.getRightImageId(), page.getLeftImageId()); // 左右いれかえ
-                    MyAdapter.sharedInstance.notifyObservers();
+                    BookViewModel.getInstance().notifyObservers();
                     getFragmentManager().popBackStack();
                 }
             });
